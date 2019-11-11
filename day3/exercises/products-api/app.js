@@ -43,10 +43,44 @@ app.get('/api/products/:id', function(req, res) {
 // adding a new product to the collection
 app.post('/api/products', function(req, res) {
   let product = req.body;
-  product.id = product.length + 1;
+  product.id = products.length + 1;
   products.push(product);
 
   res.location('/api/products/' + product.id);
   res.status(204);
   res.send();
+});
+
+/*
+/ Implementation of the missing methods.
+*/
+
+// Gets the list of all products
+app.get('/api/products', (request, response) => {
+
+  response.type('application/json').status(200).send(JSON.stringify(products));
+
+
+});
+
+// Deletes the element with the specified id
+app.delete('/api/products/:id', (request, response) => {
+
+  const id = parseInt(request.params.id);
+
+  products = products.filter( product => {
+    return id !== product.id;
+  });
+
+  for( let i = id-1; i < products.length; i++ ){
+
+    products[i].id -= 1;
+
+  }
+
+
+  response.location('/api/products/');
+  response.status(200);
+  response.send();
+
 });
