@@ -28,22 +28,31 @@ let products = [
   }
 ];
 
+let freeID = 2;
+
 // Getting an individual product
 app.get('/api/products/:id', function(req, res) {
   const id = parseInt(req.params.id);
 
-  if (id > products.length || id < 1) {
-    res.status(404).send();
+  let product = products.filter( (item) => {
+    return item.id == id;
+  });
+
+  if( product.length == 0 ){
+    res.result(404).send();
     return;
   }
 
-  res.send(products[id - 1]);
+  res.send(JSON.stringify(product));
+
 });
 
 // adding a new product to the collection
 app.post('/api/products', function(req, res) {
   let product = req.body;
-  product.id = products.length + 1;
+  console.log(product);
+  product.id = freeID;
+  freeID ++;
   products.push(product);
 
   res.location('/api/products/' + product.id);
@@ -52,35 +61,44 @@ app.post('/api/products', function(req, res) {
 });
 
 /*
-/ Implementation of the missing methods.
+* EXCERCISE: End the implementation
 */
 
-// Gets the list of all products
-app.get('/api/products', (request, response) => {
+// Get all the products
 
-  response.type('application/json').status(200).send(JSON.stringify(products));
+app.get('/api/products', (req, res) => {
 
+  res.status(200);
+  res.send(JSON.stringify(products));
 
 });
 
-// Deletes the element with the specified id
-app.delete('/api/products/:id', (request, response) => {
 
-  const id = parseInt(request.params.id);
+// Delete the product
 
-  products = products.filter( product => {
-    return id !== product.id;
+app.delete('/api/products/:id', (req, res) => {
+
+  let id = parseInt(req.params.id);
+  products = products.filter((item) => item.id != id);
+  res.status(200).send();
+  console.log(products);
+
+});
+
+app.put('/api/products/:id', (req, res) => {
+
+  let id = parseInt(req.params.id);
+  let queryProduct = req.query;
+  let product = products.find((item) => {
+    item.id != id;
   });
+  if( product && queryProduct ){
 
-  for( let i = id-1; i < products.length; i++ ){
-
-    products[i].id -= 1;
+    product.name = queryProduct.name;
+    product.description = queryProduct.description;
 
   }
 
-
-  response.location('/api/products/');
-  response.status(200);
-  response.send();
+  res.status(200).send();
 
 });

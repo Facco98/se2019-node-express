@@ -57,7 +57,8 @@ var Product = {
 
   create : function(data, cb){
 
-    $.post(BASE_URL + "/products", data, "json").success(cb.success()).fail((err) => console.log( err ));
+    console.log(data, cb);
+    $.post(BASE_URL + "/products", (data), cb.success, "json");
 
   },
 
